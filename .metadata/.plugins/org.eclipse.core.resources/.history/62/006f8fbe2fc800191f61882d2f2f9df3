@@ -1,0 +1,97 @@
+package com.propertySearcher.Algorithm;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.propertySearcher.property.Location;
+import com.propertySearcher.property.Property;
+
+public class Search implements ISearch{
+
+	private int withinHowManyMiles = 10;
+	
+	@Override
+	public List<PropertyEntry> doSearch(Location preferredLocation, double minPrice, double maxPrice, int minBedrooms,
+			int maxBedrooms, int minBathrooms, int maxBathrooms) {
+
+		/* since we require, location within 10miles, we should be only searching on property which is less than 10miles from the preferredLocation. 
+		 * I assume lat and longitude as x and y and on applying pythogoras theorem, we can get the set of locations where we need to search in. 
+		 * Formula is: sqRoot(pow(abs(preferredLocation.min-searchLocationMin),2) + pow(abs(preferredLocation.max-searchLocationMax),2)) <= 10 miles
+		 * By using the above Mathematical formula, we need to find all feasible min and max of the searchLocations. 
+		 * Let's say the found searchLocation set is Set<Location> searchLocations
+		 * I assume we have index only on the location. That's why finding (below)the search space based on location first.  
+		*/
+		Set<Location> searchLocations = getSearchLocationsToLookFor(preferredLocation);
+		
+		// Now we have a lat and longitude of searchLocations. 
+		// if we ought to handle million(and growing data set) of properties, we need to have a efficient way of searching the property. 
+		// Precomputation of indexes based on the Location (lat and long) should be done. 
+		// I have heard about elastic search or apache solr to search over big data and have a read that the search is efficient there because of the indexes that it maintain, 
+			//I don't have enough idea of how to query. So, I assume there is some existing backend server/computation logic which helps me to search over the large data set.  
+		
+		List<Long> propertyIDsSearchSpace = searchPropertyUsingSearchIndexer(searchLocations);
+		
+		//form a payload and send it to the propertyMatching Server/algorithm.
+		//Search payload contains following. 
+		// 1. List<Long> propertyIDsSearchSpace
+		//2. minPrice 
+		//3. maxPrice
+		//4. minBedrooms
+		//5. maxBedrooms. 
+		//6. minBathrooms,
+		//7. maxBathrooms. 
+		Payload searchPayload = new Payload(propertyIDsSearchSpace, minPrice, maxPrice, minBedrooms, maxBedrooms, minBathrooms, maxBathrooms);
+		
+		//send it to propertyMatcher server. 
+		List<PropertyEntry> result = filterPropertyAndFindMatchPercent(searchPayload);
+		
+		Collections.sort(result, new Comparator<PropertyEntry>() {
+
+			@Override
+			public int compare(PropertyEntry p1, PropertyEntry p2) {
+				return (int)(p2.getMatchPercent() - p1.getMatchPercent());
+			}
+			
+		});
+		
+		return result;
+	}
+
+	private Set<Location> getSearchLocationsToLookFor(Location preferredLocation) {
+		//apply the math formula using withinHowManyMiles limit and find the searchLocations set. 
+		return new HashSet<Location>();
+	}
+	
+	/*
+	 * returns list of property Ids. 
+	 */
+	public List<Long> searchPropertyUsingSearchIndexer(Set<Location> searchLocations)
+	{
+		// Now we have a lat and longitude of searchLocations. 
+		// if we ought to handle million(and growing data set) of properties, we need to have a efficient way of searching the property. 
+		// Precomputation of indexes based on the Location (lat and long) should be done. 
+		// I have heard about elastic search or apache solr to search over big data and have a read that the search is efficient there because of the indexes that it maintain, 
+		   //I don't have enough idea of how to query. So, I assume there is some existing backend server/computation logic which helps me to search over the large data set.
+		
+		return new ArrayList<Long>();
+	}
+
+	@Override
+	public List<PropertyEntry> filterPropertyAndFindMatchPercent(Payload searchPayload) {
+		 
+		//probably the aggregator server(this server) can load balance the search operation based on propertyIds
+		//property with 1-100 will be served by s1.
+		//property with 100-200 by s2. 
+		//..
+		//Wait, above trick will lead to a skew distribution and load balancing may not be efficient. 
+		//we can use set of hash functions and use consistent hashing technique to almost uniform request distribution. 
+		//May be, a zookeeper can do the load balancing based on consistent hashing. 
+		
+		return null;
+	}
+	
+}

@@ -1,0 +1,10 @@
+package com.propertySearcher.Algorithm;
+
+public interface ISearch {
+
+	/*
+	 * return list of location IDs. 
+	 */
+	List<Long> doSearch(Location preferredLocation, );
+	
+}

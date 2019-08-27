@@ -1,0 +1,15 @@
+package com.propertySearcher.Algorithm;
+
+import java.util.List;
+
+import com.propertySearcher.property.Location;
+
+public interface ISearch {
+
+	/*
+	 * return list of location IDs. 
+	 */
+	List<Property> doSearch(Location preferredLocation, double minPrice, double maxPrice, 
+			int minBedrooms, int maxBedrooms, int minBathrooms, int maxBathrooms);
+	
+}

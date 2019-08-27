@@ -1,0 +1,9 @@
+package com.propertySearcher;
+
+public class Property {
+
+	long id;
+	
+	Property()
+	
+}

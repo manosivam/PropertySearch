@@ -1,0 +1,16 @@
+package com.propertySearcher.Algorithm;
+
+import java.util.List;
+
+public class Payload {
+
+	List<Long> propertyIDsSearchSpace;
+	double minPrice, maxPrice;
+	int minBedrooms,maxBedrooms, minBathrooms, maxBathrooms;
+	
+	
+
+	
+	
+	
+}
