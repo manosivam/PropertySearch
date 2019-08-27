@@ -19,3 +19,4 @@ I also assume, we have read replicas of DB to efficiently read the property info
 It is also responsible of collecting all the responses from the slaves.
 
 # Please start reading the code from Search::doSearch method.
+[a link](https://github.com/manosivam/PropertySearch/tree/master/PropertySearch/src/com/propertySearcher/Algorithm)
