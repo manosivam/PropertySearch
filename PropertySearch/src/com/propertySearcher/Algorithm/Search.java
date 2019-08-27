@@ -14,6 +14,13 @@ public class Search implements ISearch{
 
 	private int withinHowManyMiles = 10;
 	
+	private IPercentFinder percentFinder; 
+	
+	public Search()
+	{
+		percentFinder = PercentFinder.getInstance();
+	}
+	
 	@Override
 	public List<PropertyEntry> doSearch(Location preferredLocation, double minPrice, double maxPrice, int minBedrooms,
 			int maxBedrooms, int minBathrooms, int maxBathrooms) {
@@ -147,7 +154,18 @@ public class Search implements ISearch{
 		double matchingPercent = 0; // initial  
 		//slave server can get the property details from No-SQL DB base on propertyId.
 		Property propertyFromDb = getPropertyDetailsFromDB(propertyId);
+		matchingPercent+= percentFinder.findLocationMatchPercent(propertyFromDb.getLocation(),filter.getPreferredLocation());
+		if(!percentFinder.isBudgetValidToProcess(propertyFromDb.getPrice(), filter.getMinPrice(), filter.getMaxPrice()) || 
+				!percentFinder.isBedroomsMatchesWithTheSearchToProcess(filter.getMinBathrooms(), filter.getMaxBathrooms(), propertyFromDb.getNumberOfBathRooms()) || 
+				!percentFinder.isBedroomsMatchesWithTheSearchToProcess(filter.getMinBedrooms(), filter.getMaxBedrooms(), propertyFromDb.getNumberOfBedRooms()))
+		{
+			return null; // property not matching.
+		}
+		matchingPercent+= percentFinder.findBudgetMatchPercent(propertyFromDb.getPrice(), filter.getMinPrice(), filter.getMaxPrice());
 		
+		matchingPercent+= percentFinder.findBathroomsMatchPercent(filter.getMinBathrooms(), filter.getMaxBathrooms(), propertyFromDb.getNumberOfBathRooms());
+		
+		matchingPercent+= percentFinder.findBathroomsMatchPercent(filter.getMinBedrooms(), filter.getMaxBedrooms(), propertyFromDb.getNumberOfBedRooms());
 		
 		return new PropertyEntry(propertyFromDb, matchingPercent);
 		

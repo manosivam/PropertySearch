@@ -1,2 +1,3 @@
 1566837738351	Move compilation units
 1566843446007	Rename type 'ResultEntry'
+1566928474485	Extract interface 'IPercentFinder'
