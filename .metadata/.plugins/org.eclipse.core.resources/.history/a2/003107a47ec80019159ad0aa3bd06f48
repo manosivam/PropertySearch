@@ -139,7 +139,7 @@ public class Search implements ISearch{
 		return propEntryList;
 		
 	}
-	 
+	
 	// in slave server. 
 	private PropertyEntry findMatchPercentForProperty(Long propertyId, SearchFilter filter)
 	{
